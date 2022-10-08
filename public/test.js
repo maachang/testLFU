@@ -1,7 +1,10 @@
 (function() {
 'use strict'
 
-exports.handler = function(resStatus, resHeader, params) {
+const httpsClient = require("httpsClient");
+
+exports.handler = function(resStatus, resHeader, request) {
+    console.log("## httpsClient: " + httpsClient);
     return {hello: "world"};
 }
 
