@@ -4,8 +4,8 @@
 //const httpsClient = require("httpsClient");
 
 exports.handler = function(resStatus, resHeader, request) {
-    console.log("## require: " + global.require);
-//    console.log("## httpsClient: " + httpsClient);
+    console.log("## require: " + global.frequire);
+    console.log("## vm: " + global.frequire("vm"));
     return {hello: "world"};
 }
 
