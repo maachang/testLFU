@@ -1,11 +1,11 @@
 (function() {
 'use strict'
 
-//const httpsClient = require("httpsClient");
+const httpsClient = frequire("httpsClient");
 
 exports.handler = function(resStatus, resHeader, request) {
-    console.log("## require: " + global.frequire);
-    console.log("## vm: " + global.frequire("vm"));
+    console.log("## require: " + httpsClient);
+    console.log("## vm: " + frequire("vm"));
     return {hello: "world"};
 }
 
