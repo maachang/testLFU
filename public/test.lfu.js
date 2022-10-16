@@ -1,7 +1,7 @@
 (function() {
 'use strict'
 
-const httpsClient = frequire("httpsClient");
+const httpsClient = frequire("./lib/httpsClient.js");
 
 exports.handler = function(resStatus, resHeader, request) {
     console.log("## require: " + httpsClient);
