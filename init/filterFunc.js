@@ -10,8 +10,8 @@
 // request Httpリクエスト情報.
 // 戻り値: true / false(boolean).
 //        trueの場合filter処理で処理終了となります.
-exports["function"] = function(out, resState, resHeader, request) {
-    console.log("filterFunction");
+exports.filter = function(out, resState, resHeader, request) {
+    console.log("### filterFunction");
     return false;
 }
 
