@@ -19,6 +19,7 @@ exports.handler = async function(
             return;
         }
         // 時限的セッションをチェック.
+        // これにより、直接アカウントでの機械的アクセス解析を防ぐ.
         const timedSessions = request.header.get("x-login-timed-session");
         // 存在しない場合.
         if(timedSessions == undefined) {
@@ -26,7 +27,7 @@ exports.handler = async function(
             resState.setStatus(403);
             return;
         }
-        // 時限的セッション内容の凸合.
+        // 時限的セッション内容が一致しない場合.
         if(!loginMan.isTimedSession(request, timedSessions)) {
             // status403.
             resState.setStatus(403);
