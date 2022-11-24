@@ -194,6 +194,12 @@ const movePage = function(url, params) {
    location.href = url;
 }
 
+// HttpGetパラメータを取得.
+// 戻り値: Getパラメータが返却されます.
+const httpGetParams = function() {
+   return new URL(location.href).searchParams;
+}
+
 // 対象オブジェクトがDomオブジェクトかチェック.
 // obj 対象のオブジェクトを設定します.
 // 戻り値: trueの場合Dom要素です.
@@ -546,6 +552,7 @@ const o = {};
 _g.incon = o;
 o.httpClient = httpClient;
 o.movePage = movePage;
+o.httpGetParams = httpGetParams;
 o.cancelEvent = cancelEvent;
 o.isValudateToDom = isValudateToDom;
 o.isValidateToForm = isValidateToForm;

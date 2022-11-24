@@ -171,8 +171,9 @@ const createEndAlertHtml = function() {
 }
 
 // new window to alert.
-const alertWindow = function(message) {
-    if(isNull(message) || (message = ("" + message).trim()).length == 0) {
+const alertWindow = function(message, call) {
+    if(isNull(message) ||
+        (message = ("" + message).trim()).length == 0) {
         return;
     }
     // get alertViewId.
@@ -186,7 +187,20 @@ const alertWindow = function(message) {
     timeLagCall(function() {
         const em = document.getElementById("alertWindowId");
         if(!isNull(em)) {
-            addEvent(em, "click", clearAlertWindow);
+            // call指定されている場合.
+            if(typeof(call) == "function") {
+                // クリックした場合.
+                addEvent(em, "click", function() {
+                    // コール実行でfalse以外返却の場合.
+                    if(call() != false) {
+                        // alert解除.
+                        clearAlertWindow()
+                    }
+                });
+            } else {
+                // クリックでalert解除.
+                addEvent(em, "click", clearAlertWindow);
+            }
         }
     });
 }

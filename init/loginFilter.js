@@ -9,8 +9,10 @@ const loginMan = frequire("./lib/auth/manager.js");
 
 // フィルタ対象外パス.
 const NO_FILTER_PATH = {
-    // ログインTOP画面.
+    // ログインリダイレクト画面.
     "/index.html": true,
+    // ログイン入力画面.
+    "/login.jhtml": true,
     // ログイン判定用.
     "/login": true,
     // ログアウト処理用.
@@ -19,6 +21,17 @@ const NO_FILTER_PATH = {
 
 // リダイレクト先URL.
 const REDIRECT_URL = "/index.html";
+
+// ログアウト済みメッセージ.
+const LOGOUT_MESSAGE =
+    "既にログアウト or タイムアウトしています。\n" +
+    "再度ログインしてください。";
+
+// Urlメッセージを送信.
+const sendUrlMessage = function(url, message) {
+    return url + "?message=" +
+        encodeURIComponent(message);     
+}
 
 // コンテンツ実行の事前処理を行いたい場合は設定.
 // たとえば、何らかのアクセス認証を行いたい場合は、filterFuncを設定して行う.
@@ -36,7 +49,9 @@ exports.filter = async function(
         outBody, resState, resHeader, request, NO_FILTER_PATH)) {
         // ログイン先へリダイレクト.
         outBody[null];
-        resState.redirect(REDIRECT_URL);
+        // ログアウト済みのメッセージを送信.
+        resState.redirect(
+            sendUrlMessage(REDIRECT_URL, LOGOUT_MESSAGE));
         return true;
     }
     return false;

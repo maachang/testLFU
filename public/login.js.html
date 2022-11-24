@@ -1,0 +1,133 @@
+<!DOCTYPE HTML SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+<meta charset="UTF-8" />
+<!-- robot(googleのクローラー関連)は off.-->
+<meta name="robots" content="noindex">
+<meta name="description" content="">
+<meta name="keywords" content="">
+
+<!-- ブラウザで表示されるタイトル. -->
+<title>ログイン</title>
+
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="content-style-type" content="text/css; charset=utf-8" />
+<meta http-equiv="content-script-type" content="text/javascript; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="./img/favicon.ico">
+
+<link rel="stylesheet" href="./css/base.css" type="text/css">
+<script src="./js/dialog.js"></script>
+<script src="./js/incon.js"></script>
+
+</head>
+<body>
+
+    <!-- ダイアログview用 -->
+    <div id="nowLoadingView"></div>
+    <div id="alertView"></div>
+
+    <!-- 表示タイトル -->
+    <div class="base_top_item">
+        <p class="base_top_description">
+            ユーザーログイン処理
+        </p>
+    </div>
+
+    <!-- 入力枠. -->
+    <div class="base_form" id="loginForm">
+        <div class="base_item">
+
+            <!-- エラーメッセージ -->
+            <label class="error_label">
+                <span id="errorMessage"></span>
+            </label>
+
+            <!-- ユーザー名 -->
+            <label class="base_label">
+                ■ ユーザー名
+                <span class="base_input_required">必須</span>
+            </label>
+            <input name="user"
+                type="email" class="base_input_text" autocomplete="off" spellcheck="false"
+                autofocus="autofocus"
+                required="required"
+                placeholder="ooooooo@xxxxxx.com"
+                v-msg="ユーザー名はメールアドレスを設定してください"
+            >
+
+            <!-- パスワード -->
+            <label class="base_label">
+                ■ パスワード
+                <span class="base_input_required">必須</span>
+            </label>
+            <input name="password"
+                type="password" class="base_input_text" autocomplete="off" spellcheck="false"
+                required="required"
+                placeholder="パスワードは最低８文字以上です"
+                v-min="8"
+                v-msg="パスワードは最低８文字以上です"
+            >
+        </div>
+
+        <!-- 確定ボタン. -->
+        <div class="base_submit">
+            <button
+                onclick="javascript:loginAction();">
+                ログイン
+            </button>
+        </div>
+    </div>
+
+    <!-- ログイン処理. -->
+    <script>
+
+        // login処理.
+        const loginAction = function() {
+            // エラーメッセージクリア.
+            incon.clearErrorMessage();
+
+            // ログインパラメータvalidate.
+            if(incon.isValidateToDomNameAray("user", "password")) {
+                // 入力内容が不整合.
+                return false;
+            }
+
+            // ログインパラメータを取得.
+            const params = incon.getDomNameArrayToParams(
+                "user", "password");
+
+            // ログイン処理.
+            incon.httpClient("/login", {
+                method: "JSON",
+                params: params
+            })
+            // 正常処理.
+            .then(function(result) {
+                if(result.status >= 500) {
+                    // ログイン処理で例外(status>=500)発生.
+                    incon.errorMessage("ログイン処理でエラーが発生しました");
+                    return false;
+                } else if(result.status >= 400) {
+                    // ログイン処理に失敗(status>=400).
+                    incon.errorMessage("ログイン処理に失敗しました");
+                    return false;
+                }
+                // 正常結果を返却.
+                incon.movePage("/menu.jhtml");
+                return true;
+            })
+            // 例外処理.
+            .catch(function(e) {
+                console.error("[error] ログイン処理でエラーが発生しました", e);
+                // ログイン処理で例外発生.
+                incon.errorMessage("ログイン処理でエラーが発生しました");
+                return false;
+            });
+        }
+
+    </script>
+</body>
+</html>
