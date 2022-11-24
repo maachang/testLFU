@@ -16,6 +16,21 @@ exports.handler = async function(
         if(request.method != "POST") {
             // status403.
             resState.setStatus(403);
+            return;
+        }
+        // 時限的セッションをチェック.
+        const timedSessions = request.header.get("x-login-timed-session");
+        // 存在しない場合.
+        if(timedSessions == undefined) {
+            // status403.
+            resState.setStatus(403);
+            return;
+        }
+        // 時限的セッション内容の凸合.
+        if(!loginMan.isTimedSession(request, timedSessions)) {
+            // status403.
+            resState.setStatus(403);
+            return;
         }
         // パラメータを取得.
         const params = request.params;
@@ -26,6 +41,7 @@ exports.handler = async function(
         if(!ret) {
             // status403.
             resState.setStatus(403);
+            return;
         }
     } catch(e) {
         console.error("error login", e);

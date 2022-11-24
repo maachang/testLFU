@@ -1,3 +1,8 @@
+<%
+    // ログイン用マネージャー.
+    const loginMan = frequire("./lib/auth/manager.js");
+%>
+
 <!DOCTYPE HTML SYSTEM "about:legacy-compat">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
 <head>
@@ -32,7 +37,7 @@
     <!-- 表示タイトル -->
     <div class="base_top_item">
         <p class="base_top_description">
-            ユーザーログイン処理
+            ユーザーログイン
         </p>
     </div>
 
@@ -102,6 +107,11 @@
             // ログイン処理.
             incon.httpClient("/login", {
                 method: "JSON",
+                header: {
+                    // ２時間のトークン設定.
+                    "x-login-timed-session":
+                        "<%= loginMan.createTimedSession($request, 60 * 60 * 1000 * 2); %>"
+                },
                 params: params
             })
             // 正常処理.
