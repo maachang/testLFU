@@ -15,7 +15,9 @@ exports.handler = async function(
         // ログアウト処理.
         await loginMan.logout(resHeader, request);
     } catch(e) {
+        // 例外出力.
+        console.error("error logout", e);
         // status500.
-        resState.setStatus(500, "" + e);
+        resState.setStatus(500);
     }
 }
