@@ -31,6 +31,9 @@ const BACK_DIALOG_SHADOW = "box-shadow: 10px 10px 10px rgba(0,0,0,0.75);";
 // alert window id.
 const ALERT_WINDOW_ID = "alertWindowId";
 
+// メッセージフッダ. 
+const MESSAGE_FOODER = "\n\n-- click alert to close. --";
+
 // 時間差コール.
 const timeLagCall = function(call) {
     setTimeout(function() {
@@ -182,7 +185,7 @@ const alertWindow = function(message, call) {
         return;
     }
     nowLoading();
-    em.innerHTML = createStartAlertHtml(message) + createEndAlertHtml();
+    em.innerHTML = createStartAlertHtml(message + MESSAGE_FOODER) + createEndAlertHtml();
     // click callback.
     timeLagCall(function() {
         const em = document.getElementById("alertWindowId");
@@ -271,6 +274,7 @@ const confirmWindow = function(message, call) {
 }
 
 // [async]アラート処理.
+// awaitで呼び出す事で、jsの簡略化が出来ますので、こちらの利用を推奨します.
 // message 対象のメッセージを設定します.
 // 戻り値: awaitで呼び出す場合は　確定した場合は `undefined` が返却されます.
 const alertAsync = async function(message) {
@@ -282,6 +286,7 @@ const alertAsync = async function(message) {
 }
 
 // [async]確認アラート処理.
+// awaitで呼び出す事で、jsの簡略化が出来ますので、こちらの利用を推奨します.
 // message 対象のメッセージを設定します.
 // 戻り値: awaitで呼び出す場合は 確認OKが true 確認Cancelが false が返却されます.
 const confirmAsync = async function(message) {
@@ -307,6 +312,5 @@ o.clearNowLoading = clearNowLoading;
 // async用.
 o.alertAsync = alertAsync;
 o.confirmAsync = confirmAsync;
-
 
 })(this);

@@ -24,9 +24,10 @@ const REDIRECT_URL = "/index.html";
 
 // ログアウト済みメッセージ.
 const LOGOUT_MESSAGE =
-    "既にログアウトしているか、他が同一ユーザでログインしています。";
+    "ログイン寿命/ログアウト/同一ユーザのログインで再ログインが必要です";
 
-// Urlメッセージを送信.
+// リダイレクト先に対するUrlメッセージを送信.
+// アラートで表示されます.
 const sendUrlMessage = function(url, message) {
     return url + "?message=" +
         encodeURIComponent(message);     

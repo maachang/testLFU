@@ -162,7 +162,7 @@ const httpClient = function(url, options) {
 // method=GETでページ遷移します.
 // url 対象のURLを設定します.
 // params 対象のパラメータ(string or object)を設定します.
-const movePage = function(url, params) {
+const nextPage = function(url, params) {
    if(params != undefined && params != null) {
       if(typeof(params) != "string") {
          let pms = "";
@@ -658,7 +658,7 @@ const o = {};
 _g.request = o;
 o.loadDelay = loadDelay;
 o.httpClient = httpClient;
-o.movePage = movePage;
+o.nextPage = nextPage;
 o.httpGetParams = httpGetParams;
 o.cancelEvent = cancelEvent;
 o.isValudateToDom = isValudateToDom;

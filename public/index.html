@@ -43,9 +43,11 @@
             location.href = REDIRECT_URL;
         } else {
             // アラートが閉じた後にリダイレクト.
-            dialog.alertWindow(params.get("message"), function() {
-                location.href = REDIRECT_URL;
-            });
+            dialog.alertWindow(
+                params.get("message"),
+                function() {
+                    location.href = REDIRECT_URL;
+                });
         }
 
     </script>
