@@ -588,6 +588,7 @@ const clearErrorMessage = function() {
 /////////////////////////////////////////////////////
 const o = {};
 _g.incon = o;
+o.loadDelay = loadDelay;
 o.httpClient = httpClient;
 o.movePage = movePage;
 o.httpGetParams = httpGetParams;
