@@ -1,5 +1,7 @@
 // ログイン処理.
 //
+(function() {
+'use strict'
 
 // ログインマネージャ.
 const loginMan = frequire("./lib/auth/manager.js");
@@ -19,8 +21,9 @@ exports.handler = async function(
             return;
         }
         // 時限的セッションをチェック.
-        // これにより、直接アカウントでの機械的アクセス解析を防ぐ.
-        const timedSessions = request.header.get("x-login-timed-session");
+        // これにより、直接アクセス・アカウントでの機械的アクセス解析を防ぐ.
+        const timedSessions = request.header.get(
+            "x-login-timed-session");
         // 存在しない場合.
         if(timedSessions == undefined) {
             // status403.
@@ -29,8 +32,9 @@ exports.handler = async function(
         }
         // 時限的セッション内容が一致しない場合.
         if(!loginMan.isTimedSession(request, timedSessions)) {
-            // status403.
-            resState.setStatus(403);
+            // 時限的セッションタイムアウト.
+            // status401.
+            resState.setStatus(401);
             return;
         }
         // パラメータを取得.
@@ -50,3 +54,5 @@ exports.handler = async function(
         resState.setStatus(403);
     }
 }
+
+})();

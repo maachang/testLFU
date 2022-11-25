@@ -397,7 +397,7 @@ const getDomNameArrayToDom = function() {
 // arguments dom.name, dom.name, .... と設定します.
 // dom.name は <input name>のようなものを指します.
 // 戻り値: trueの場合、validateを検出しました.
-const isValidateToDomNameAray = function() {
+const isValidateInputArray = function() {
    const list = getDomNameArrayToDom.apply(
       null, arguments);
    const len = list.length;
@@ -419,7 +419,7 @@ const isValidateToDomNameAray = function() {
 // arguments dom.name, dom.name, .... と設定します.
 // dom.name は <input name>のようなものを指します.
 // 戻り値: dom内容が返却されます.
-const getDomNameArrayToParams = function() {
+const getInputArray = function() {
    const list = getDomNameArrayToDom.apply(
       null, arguments);
    const len = list.length;
@@ -496,6 +496,44 @@ const getDomNameArrayToParams = function() {
    return ret;
 }
 
+// dom.name名群を指定して初期化.
+// arguments dom.name, dom.name, .... と設定します.
+// dom.name は <input name>のようなものを指します.
+const clearInputArray = function() {
+   const list = getDomNameArrayToDom.apply(
+      null, arguments);
+   const len = list.length;
+   let e, type, key, val, o;
+   for(let i = 0; i < len; i ++) {
+      e = list[i];
+      // dom.name を取得.
+      if(useString(e.name)) {
+         // nameで取得.
+         key = e.name;
+      } else {
+         // 存在しない場合は対象としない.
+         continue;
+      }
+      // typeを取得.
+      type = e.type.toLowerCase();
+      // テキストエリア.
+      if(isTagName(e, "textarea")) {
+         e.value = "";
+      // ラジオボタン.
+      } else if(type == "radio") {
+         e.checked = false;
+      // チェックボックス.
+      } else if(type == "checkbox") {
+         e.checked = false;
+      // それ以外(他input or select).
+      } else {
+         e.value = "";
+      }
+   }
+}
+
+
+
 // ※この処理はbody読み込み後に実行する必要があります.
 // 全テキストエリアにautoHeightByTextAreaを適用する.
 // これを設定する事で、入力枠に対して一定以上の改行が入ると
@@ -556,8 +594,10 @@ o.httpGetParams = httpGetParams;
 o.cancelEvent = cancelEvent;
 o.isValudateToDom = isValudateToDom;
 o.isValidateToForm = isValidateToForm;
-o.isValidateToDomNameAray = isValidateToDomNameAray;
-o.getDomNameArrayToParams = getDomNameArrayToParams;
+o.getDomNameArrayToDom = getDomNameArrayToDom;
+o.isValidateInputArray = isValidateInputArray;
+o.getInputArray = getInputArray;
+o.clearInputArray = clearInputArray;
 o.autoHeightToTextArea = autoHeightToTextArea;
 o.errorMessage = errorMessage;
 o.clearErrorMessage = clearErrorMessage;

@@ -59,7 +59,7 @@
                 type="email" class="base_input_text" autocomplete="off" spellcheck="false"
                 autofocus="autofocus"
                 required="required"
-                placeholder="メールアドレスを入力してください"
+                placeholder="メールアドレスを入力"
                 v-msg="ユーザー名はメールアドレスを設定してください"
             >
 
@@ -71,9 +71,9 @@
             <input name="password"
                 type="password" class="base_input_text" autocomplete="off" spellcheck="false"
                 required="required"
-                placeholder="パスワードは最低８文字以上です"
+                placeholder="パスワードは最低８文字以上"
                 v-min="8"
-                v-msg="パスワードは最低８文字以上です"
+                v-msg="パスワードは最低８文字以上で設定してください"
             >
         </div>
 
@@ -101,16 +101,17 @@
             incon.clearErrorMessage();
 
             // ログインパラメータvalidate.
-            if(incon.isValidateToDomNameAray("user", "password")) {
+            if(incon.isValidateInputArray("user", "password")) {
                 // 入力内容が不整合.
                 return false;
             }
 
             // ログインパラメータを取得.
-            const params = incon.getDomNameArrayToParams(
+            const params = incon.getInputArray(
                 "user", "password");
 
             // ログイン処理.
+            dialog.nowLoading();
             incon.httpClient("/login", {
                 // json.
                 method: "JSON",
@@ -124,25 +125,47 @@
             })
             // 正常処理.
             .then(function(result) {
-                if(result.status >= 500) {
-                    // ログイン処理で例外(status>=500)発生.
-                    incon.errorMessage("ログイン処理でエラーが発生しました");
-                    return false;
-                } else if(result.status >= 400) {
-                    // ログイン処理に失敗(status>=400).
-                    incon.errorMessage("ログイン処理に失敗しました");
-                    return false;
+                try {
+                    if(result.status >= 500) {
+                        // ログイン処理で例外(status>=500)発生.
+                        incon.errorMessage("ログイン処理でエラーが発生しました");
+                        return false;
+                    } else if(result.status >= 400) {
+                        // ログイン処理に失敗(status>=400).
+                        if(result.status == 401) {
+                            // 時限的セッションタイムアウト(401).
+                            incon.clearInputArray("user", "password");
+                            dialog.alertWindow(
+                                "一定期間が過ぎました。再度ログインを行ってください.", function() {
+                                    incon.movePage("/login.jhtml");
+                                });
+                            return false;
+                        }
+                        incon.errorMessage("ログイン処理に失敗しました");
+                        // user入力画面にフォーカスをセット.
+                        try {
+                            incon.getDomNameArrayToDom("user")[0].focus();
+                        } catch(e) {
+                        }
+                        return false;
+                    }
+                    // 正常結果を返却.
+                    incon.movePage("/menu.jhtml");
+                    return true;
+                } finally {
+                    dialog.clearNowLoading();
                 }
-                // 正常結果を返却.
-                incon.movePage("/menu.jhtml");
-                return true;
             })
             // 例外処理.
             .catch(function(e) {
-                console.error("[error] ログイン処理でエラーが発生しました", e);
-                // ログイン処理で例外発生.
-                incon.errorMessage("ログイン処理でエラーが発生しました");
-                return false;
+                try {
+                    console.error("[error] ログイン処理でエラーが発生しました", e);
+                    // ログイン処理で例外発生.
+                    incon.errorMessage("ログイン処理でエラーが発生しました");
+                    return false;
+                } finally {
+                    dialog.clearNowLoading();
+                }
             });
         }
 

@@ -24,8 +24,7 @@ const REDIRECT_URL = "/index.html";
 
 // ログアウト済みメッセージ.
 const LOGOUT_MESSAGE =
-    "既にログアウト or タイムアウトしています。\n" +
-    "再度ログインしてください。";
+    "既にログアウトしているか、他が同一ユーザでログインしています。";
 
 // Urlメッセージを送信.
 const sendUrlMessage = function(url, message) {

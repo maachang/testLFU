@@ -1,5 +1,7 @@
 // ログアウト処理.
 //
+(function(_g) {
+'use strict'
 
 // ログインマネージャ.
 const loginMan = frequire("./lib/auth/manager.js");
@@ -21,3 +23,5 @@ exports.handler = async function(
         resState.setStatus(500);
     }
 }
+
+})();
