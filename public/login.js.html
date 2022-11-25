@@ -111,6 +111,7 @@
                 "user", "password");
 
             // ログイン処理.
+            let result = false;
             dialog.nowLoading();
             incon.httpClient("/login", {
                 // json.
@@ -125,45 +126,46 @@
             })
             // 正常処理.
             .then(function(result) {
-                try {
-                    if(result.status >= 500) {
-                        // ログイン処理で例外(status>=500)発生.
-                        incon.errorMessage("ログイン処理でエラーが発生しました");
-                        return false;
-                    } else if(result.status >= 400) {
-                        // ログイン処理に失敗(status>=400).
-                        if(result.status == 401) {
-                            // 時限的セッションタイムアウト(401).
-                            incon.clearInputArray("user", "password");
-                            dialog.alertWindow(
-                                "一定期間が過ぎました。再度ログインを行ってください.", function() {
-                                    incon.movePage("/login.jhtml");
-                                });
-                            return false;
-                        }
-                        incon.errorMessage("ログイン処理に失敗しました");
-                        // user入力画面にフォーカスをセット.
-                        try {
-                            incon.getDomNameArrayToDom("user")[0].focus();
-                        } catch(e) {
-                        }
-                        return false;
+                if(result.status >= 500) {
+                    // ログイン処理で例外(status>=500)発生.
+                    incon.errorMessage("ログイン処理でエラーが発生しました");
+                    return;
+                } else if(result.status >= 400) {
+                    // ログイン処理に失敗(status>=400).
+                    if(result.status == 401) {
+                        // 時限的セッションタイムアウト(401).
+                        incon.clearInputArray("user", "password");
+                        dialog.alertWindow(
+                            "一定期間が過ぎました。再度ログインを行ってください.", function() {
+                                incon.movePage("/login.jhtml");
+                            });
+                        return;
                     }
-                    // 正常結果を返却.
-                    incon.movePage("/menu.jhtml");
-                    return true;
-                } finally {
-                    dialog.clearNowLoading();
+                    incon.errorMessage("ログイン処理に失敗しました");
+                    // user入力画面にフォーカスをセット.
+                    try {
+                        incon.getDomNameArrayToDom("user")[0].focus();
+                    } catch(e) {
+                    }
+                    return;
                 }
+                // 正常結果を返却.
+                incon.movePage("/menu.jhtml");
+                // 正常処理
+                result = true;
             })
             // 例外処理.
             .catch(function(e) {
-                try {
-                    console.error("[error] ログイン処理でエラーが発生しました", e);
-                    // ログイン処理で例外発生.
-                    incon.errorMessage("ログイン処理でエラーが発生しました");
-                    return false;
-                } finally {
+                console.error("[error] ログイン処理でエラーが発生しました", e);
+                // ログイン処理で例外発生.
+                incon.errorMessage("ログイン処理でエラーが発生しました");
+                return;
+            })
+            // 最終処理.
+            .finally(function() {
+                // 正常処理でない場合.
+                if(!result) {
+                    // nowLoadingを解除.
                     dialog.clearNowLoading();
                 }
             });
