@@ -191,15 +191,17 @@ const alertWindow = function(message, call) {
             if(typeof(call) == "function") {
                 // クリックした場合.
                 addEvent(em, "click", function() {
-                    // コール実行でfalse以外返却の場合.
-                    if(call() != false) {
-                        // alert解除.
-                        clearAlertWindow()
-                    }
+                    // コール実行.
+                    call();
+                    // alert解除.
+                    clearAlertWindow()
                 });
             } else {
                 // クリックでalert解除.
-                addEvent(em, "click", clearAlertWindow);
+                addEvent(em, "click", function() {
+                    // alert解除.
+                    clearAlertWindow();
+                });
             }
         }
     });
@@ -268,15 +270,42 @@ const confirmWindow = function(message, call) {
     });
 }
 
+// [async]アラート処理.
+// message 対象のメッセージを設定します.
+// 戻り値: awaitで呼び出す場合は　確定した場合は `undefined` が返却されます.
+const alertAsync = async function(message) {
+    return new Promise(function(resolve) {
+        alertWindow(message, function() {
+            return resolve();
+        });
+    });
+}
+
+// [async]確認アラート処理.
+// message 対象のメッセージを設定します.
+// 戻り値: awaitで呼び出す場合は 確認OKが true 確認Cancelが false が返却されます.
+const confirmAsync = async function(message) {
+    return new Promise(function(resolve) {
+        confirmWindow(message, function(yes) {
+            return resolve(yes);
+        });
+    });
+}
+
 /////////////////////////////////////////////////////
 // 外部定義.
 /////////////////////////////////////////////////////
 const o = {};
 _g.dialog = o;
+
 o.nowLoading = nowLoading;
 o.alertWindow = alertWindow;
 o.confirmWindow = confirmWindow;
 o.clearAlertWindow = clearAlertWindow;
 o.clearNowLoading = clearNowLoading;
+
+// async用.
+o.alertAsync = alertAsync;
+o.confirmAsync = confirmAsync;
 
 })(this);

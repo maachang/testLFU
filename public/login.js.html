@@ -25,7 +25,7 @@
 
 <link rel="stylesheet" href="./css/base.css" type="text/css">
 <script src="./js/dialog.js"></script>
-<script src="./js/incon.js"></script>
+<script src="./js/request.js"></script>
 
 </head>
 <body>
@@ -96,79 +96,61 @@
     <script>
 
         // login処理.
-        const loginAction = function() {
+        const loginAction = async function() {
             // エラーメッセージクリア.
-            incon.clearErrorMessage();
+            request.clearErrorMessage();
 
             // ログインパラメータvalidate.
-            if(incon.isValidateInputArray("user", "password")) {
+            if(request.isValidateInputArray("user", "password")) {
                 // 入力内容が不整合.
                 return false;
             }
 
             // ログインパラメータを取得.
-            const params = incon.getInputArray(
+            const params = request.getInputArray(
                 "user", "password");
 
             // ログイン処理.
-            let result = false;
-            dialog.nowLoading();
-            incon.httpClient("/login", {
-                // json.
-                method: "JSON",
-                // 時限的トークン.
-                header: {
-                    "x-login-timed-session":
-                        "<%= loginMan.createTimedSession($request, LOGIN_TOKEN_TIMEOUT); %>"
-                },
-                // ユーザ名・パスワード.
-                params: params
-            })
-            // 正常処理.
-            .then(function(result) {
+            try {
+                const result = await request.httpAsync("/login", {
+                    // json.
+                    method: "JSON",
+                    // 時限的トークン.
+                    header: {
+                        "x-login-timed-session":
+                            "<%= loginMan.createTimedSession($request, LOGIN_TOKEN_TIMEOUT); %>"
+                    },
+                    // ユーザ名・パスワード.
+                    params: params
+                });
+                // 正常処理系.
                 if(result.status >= 500) {
                     // ログイン処理で例外(status>=500)発生.
-                    incon.errorMessage("ログイン処理でエラーが発生しました");
+                    request.errorMessage("ログイン処理でエラーが発生しました");
                     return;
                 } else if(result.status >= 400) {
                     // ログイン処理に失敗(status>=400).
                     if(result.status == 401) {
                         // 時限的セッションタイムアウト(401).
-                        incon.clearInputArray("user", "password");
+                        request.clearInputArray("user", "password");
                         dialog.alertWindow(
                             "一定期間が過ぎました。再度ログインを行ってください.", function() {
-                                incon.movePage("/login.jhtml");
+                                request.movePage("/login.jhtml");
                             });
                         return;
                     }
-                    incon.errorMessage("ログイン処理に失敗しました");
+                    request.errorMessage("ログイン処理に失敗しました");
                     // user入力画面にフォーカスをセット.
-                    try {
-                        incon.getDomNameArrayToDom("user")[0].focus();
-                    } catch(e) {
-                    }
+                    request.forcsElement("user");
                     return;
                 }
                 // 正常結果を返却.
-                incon.movePage("/menu.jhtml");
-                // 正常処理
-                result = true;
-            })
-            // 例外処理.
-            .catch(function(e) {
+                request.movePage("/menu.jhtml");
+            } catch(e) {
                 console.error("[error] ログイン処理でエラーが発生しました", e);
                 // ログイン処理で例外発生.
-                incon.errorMessage("ログイン処理でエラーが発生しました");
-                return;
-            })
-            // 最終処理.
-            .finally(function() {
-                // 正常処理でない場合.
-                if(!result) {
-                    // nowLoadingを解除.
-                    dialog.clearNowLoading();
-                }
-            });
+                request.errorMessage("ログイン処理でエラーが発生しました");
+            }
         }
 
     </script>

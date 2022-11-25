@@ -20,7 +20,7 @@
 
 <link rel="stylesheet" href="./css/base.css" type="text/css">
 <script src="./js/dialog.js"></script>
-<script src="./js/incon.js"></script>
+<script src="./js/request.js"></script>
 
 
 </head>
@@ -61,50 +61,35 @@
     <script>
 
         // logout処理.
-        const logoutAction = function() {
+        const logoutAction = async function() {
             // エラーメッセージクリア.
-            incon.clearErrorMessage();
-            dialog.confirmWindow("ログアウトします。よろしいですか？", function(yes) {
-                // noボタンが押された場合.
-                if(!yes) {
-                    return false;
+            request.clearErrorMessage();
+            // ダイアログでログアウト確認.
+            const yes = await dialog.confirmAsync("ログアウトします。よろしいですか？");
+            // noボタンが押された場合.
+            if(!yes) {
+                // 処理中止.
+                return;
+            }
+            try {
+                // ログアウト処理.
+                const result = await request.httpAsync("/logout");
+                if(result.status >= 500) {
+                    // ログアウト処理で例外(status>=500)発生.
+                    request.errorMessage("ログアウト処理でエラーが発生しました");
+                    return;
+                } else if(result.status >= 400) {
+                    // ログアウト処理に失敗(status>=400).
+                    request.errorMessage("ログアウト処理に失敗しました");
+                    return;
                 }
-                // 遅延ログアウト処理.
-                incon.loadDelay(function() {
-                    let result = false;
-                    dialog.nowLoading();
-                    incon.httpClient("/logout")
-                    // 成功処理.
-                    .then(function(result) {
-                        if(result.status >= 500) {
-                            // ログアウト処理で例外(status>=500)発生.
-                            incon.errorMessage("ログアウト処理でエラーが発生しました");
-                            return;
-                        } else if(result.status >= 400) {
-                            // ログアウト処理に失敗(status>=400).
-                            incon.errorMessage("ログアウト処理に失敗しました");
-                            return;
-                        }
-                        // 正常結果を返却.
-                        incon.movePage("/index.html");
-                        result = true;
-                    })
-                    // 例外処理.
-                    .catch(function(e) {
-                        console.error("[error] ログアウト処理でエラーが発生しました", e);
-                        // ログイン処理で例外発生.
-                        incon.errorMessage("ログアウト処理でエラーが発生しました");
-                    })
-                    // finally.
-                    .finally(function() {
-                        // 正常処理でない場合.
-                        if(!result) {
-                            // nowLoadingを解除.
-                            dialog.clearNowLoading();
-                        }
-                    });
-                });
-            });
+                // 正常結果を返却.
+                request.movePage("/index.html");
+            } catch(e) {
+                console.error("[error] ログアウト処理でエラーが発生しました", e);
+                // ログイン処理で例外発生.
+                request.errorMessage("ログアウト処理でエラーが発生しました");
+            }
         }
     </script>
 </body>    

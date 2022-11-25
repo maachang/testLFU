@@ -1,12 +1,4 @@
-// inputコントローラー.
-// inputタグ内のvalidateなど、コントロールします.
-//
-// この処理は結構単純な画面、たとえば全体が入力対象の
-// 情報の場合に利用する事が適当です.
-// 逆に言えば、１つの画面で入力区分が複数ある場合や
-// ボタンアクションで項目が増減する場合のような構成の
-// 場合は、このinputコントローラの利用は難しいです.
-//
+// request処理.
 (function(_g) {
 "use strict";
 
@@ -29,7 +21,7 @@ const useString = function(n) {
 // 時間差実行.
 // call 実行functionを設定します.
 // time 実行差の時間(ミリ秒)を設定します.
-var loadDelay = function(call, time) {
+const loadDelay = function(call, time) {
    // 遅延実行開始時間(ミリ秒)が指定されてない場合.
    time = time|0;
    if(time <= 0) {
@@ -60,7 +52,7 @@ const _ajax_head = function(m, ax, h){
            'application/x-www-form-urlencoded');
    }
    if(!isNull(h)) {
-       for(var k in h) {
+       for(let k in h) {
            ax.setRequestHeader(k, h[k]);
        }
    }
@@ -83,7 +75,7 @@ const _ajax_method = function(m) {
 //          header: HTTPレスポンスヘッダが返却されます.
 //          body: HTTPレスポンスBodyが返却されます.
 //       catch(e): e: エラー内容が返却されます.
-const httpClient = /* async */ function(url, options) {
+const httpClient = function(url, options) {
    if(options == undefined || options == null) {
       options = {};
    }
@@ -98,14 +90,14 @@ const httpClient = /* async */ function(url, options) {
          let params = options.params;
          let header = options.header;
          method = (method+"").toUpperCase();
-         var pms = "" ;
+         let pms = "" ;
          if(!isNull(params)) {
             if(typeof(params) == "string") {
                pms = params ;
             } else if(method == "JSON") {
                pms = JSON.stringify(params);
             } else {
-               for( var k in params ) {
+               for(let k in params) {
                   pms += "&" + k + "=" +
                      encodeURIComponent(params[k]) ;
                }
@@ -532,19 +524,30 @@ const clearInputArray = function() {
    }
 }
 
-
+// 指定名のElementをFocus.
+// name 対象のDomInput名を設定します.
+// 戻り値: trueの場合、フォーカスが設定されました.
+const focusElement = function(name) {
+   // user入力画面にフォーカスをセット.
+   try {
+      request.getDomNameArrayToDom(name)[0].focus();
+      return true;
+   } catch(e) {
+      return false;
+   }
+}
 
 // ※この処理はbody読み込み後に実行する必要があります.
 // 全テキストエリアにautoHeightByTextAreaを適用する.
 // これを設定する事で、入力枠に対して一定以上の改行が入ると
 // 自動的に増減するように対応できる.
-var autoHeightToTextArea = function() {
+const autoHeightToTextArea = function() {
    // 実行後100ミリ秒(デフォルト値)で反映させる.
    loadDelay(function() {
       let textarea, clientHeight;
       const list = document.getElementsByTagName("textarea");
       const len = list.length;
-      for(var i = 0; i < len; i ++) {
+      for(let i = 0; i < len; i ++) {
          textarea = list[i];
          if(!isTagName(textarea, "textarea")) {
             continue;
@@ -556,7 +559,7 @@ var autoHeightToTextArea = function() {
          textarea.style.height = textarea.scrollHeight + 'px';
          // 入力毎に現状の大きさとスクロールサイズでリサイズ.
          textarea.addEventListener('input', function(event) {
-            var target = event.target;
+            const target = event.target;
             // 現状の大きさとスクロールサイズでリサイズ.
             target.style.height = clientHeight + 'px';
             target.style.height = target.scrollHeight + 'px';
@@ -583,11 +586,76 @@ const clearErrorMessage = function() {
    return errorMessage("");
 }
 
+// [async]httpClient.
+// 問題ない場合は `request.httpClient` でなく この処理を呼び出します.
+// url 対象のURLを設定します.
+// optins {method: string, header: object, params: object}
+//        method HTTPメソッドを設定します.
+//        params パラメータを設定します.
+//        header 設定したいHTTPリクエストヘッダを設定します.
+// startCall 処理開始時に呼び出すcallを指定します.
+// finalCall 処理終了時に呼び出すcallを設定します.
+//           function(value, error);
+//             value: then(value)が設定されます.
+//             error: catch(e)が設定されます.
+// 戻り値 promiseオブジェクトが返却されます(async).
+//       then({status: number, header: object, body: string}):
+//          status: HTTPレスポンスステータスが返却されます.
+//          header: HTTPレスポンスヘッダが返却されます.
+//          body: HTTPレスポンスBodyが返却されます.
+//       catch(e): e: エラー内容が返却されます.
+const httpAsync = async function(
+   url, options, startCall, finalCall) {
+   if(typeof(startCall) != "function") {
+      // デフォルトの開始処理をセット.
+      startCall = function() {
+         // 開始時はNowLoadingをセット.
+         dialog.nowLoading();
+      }
+   }
+   if(typeof(finalCall) != "function") {
+      // デフォルトの終了処理をセット.
+      finalCall = function(value, err) {
+         // 異常処理系の場合.
+         // HTTPレスポンスステータスが400以上.
+         if(err != undefined ||
+            (value != undefined && value.status >= 400)) {
+            try {
+               // nowLoadingを解除.
+               dialog.clearNowLoading();
+            } catch(e) {}
+         }
+      }
+   }
+   return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+         let v, e;
+         try {
+            startCall();
+         } catch(e) {}
+         httpClient(url, options)
+         .then(function(value) {
+            v = value;
+            resolve(value);
+         })
+         .catch(function(err) {
+            e = err;
+            reject(err);
+         })
+         .finally(function() {
+            try {
+               finalCall(v, e);
+            } catch(e) {};
+         });
+      }, 100);
+   });
+}
+
 /////////////////////////////////////////////////////
 // 外部定義.
 /////////////////////////////////////////////////////
 const o = {};
-_g.incon = o;
+_g.request = o;
 o.loadDelay = loadDelay;
 o.httpClient = httpClient;
 o.movePage = movePage;
@@ -599,8 +667,12 @@ o.getDomNameArrayToDom = getDomNameArrayToDom;
 o.isValidateInputArray = isValidateInputArray;
 o.getInputArray = getInputArray;
 o.clearInputArray = clearInputArray;
+o.focusElement = focusElement;
 o.autoHeightToTextArea = autoHeightToTextArea;
 o.errorMessage = errorMessage;
 o.clearErrorMessage = clearErrorMessage;
+
+// async用.
+o.httpAsync = httpAsync;
 
 })(this);
