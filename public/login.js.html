@@ -44,13 +44,14 @@
     <!-- 入力枠. -->
     <div class="base_form" id="loginForm">
         <div class="base_item">
-
             <!-- エラーメッセージ -->
             <label class="error_label">
                 <span id="errorMessage"></span>
             </label>
+        </div>
 
-            <!-- ユーザー名 -->
+        <!-- ユーザー名 -->
+        <div class="base_item">
             <label class="base_label">
                 ■ ユーザー名
                 <span class="base_input_required">必須</span>
@@ -62,8 +63,9 @@
                 placeholder="メールアドレスを入力"
                 v-msg="ユーザー名はメールアドレスを設定してください"
             >
-
-            <!-- パスワード -->
+        </div>
+        <!-- パスワード -->
+        <div class="base_item">
             <label class="base_label">
                 ■ パスワード
                 <span class="base_input_required">必須</span>
@@ -125,8 +127,10 @@
                 });
                 // 正常処理系.
                 if(result.status >= 500) {
+                    console.error("[error] ログイン処理でエラーが発生しました: " +
+                        result.status);
                     // ログイン処理で例外(status>=500)発生.
-                    request.errorMessage("ログイン処理でエラーが発生しました");
+                    request.errorMessage("ログイン処理に失敗しました");
                     return;
                 } else if(result.status >= 400) {
                     // ログイン処理に失敗(status>=400).
@@ -149,7 +153,7 @@
             } catch(e) {
                 console.error("[error] ログイン処理でエラーが発生しました", e);
                 // ログイン処理で例外発生.
-                request.errorMessage("ログイン処理でエラーが発生しました");
+                request.errorMessage("ログイン処理に失敗しました");
             }
         }
 
