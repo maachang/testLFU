@@ -63,7 +63,7 @@ const _ajax_method = function(m) {
    return m == 'JSON' ? 'POST' : m;
 }
 
-// httpClient実行.
+// ajax実行.
 // url 対象のURLを設定します.
 // optins {method: string, header: object, params: object}
 //        method HTTPメソッドを設定します.
@@ -75,7 +75,7 @@ const _ajax_method = function(m) {
 //          header: HTTPレスポンスヘッダが返却されます.
 //          body: HTTPレスポンスBodyが返却されます.
 //       catch(e): e: エラー内容が返却されます.
-const httpClient = function(url, options) {
+const ajax = function(url, options) {
    if(options == undefined || options == null) {
       options = {};
    }
@@ -586,15 +586,15 @@ const clearErrorMessage = function() {
    return errorMessage("");
 }
 
-// [async]httpClient.
-// 問題ない場合は `request.httpClient` でなく この処理を呼び出します.
+// [async]ajax.
+// 基本 `request.ajax` でなくこの処理を呼び出します.
 // url 対象のURLを設定します.
 // optins {method: string, header: object, params: object}
 //        method HTTPメソッドを設定します.
 //        params パラメータを設定します.
 //        header 設定したいHTTPリクエストヘッダを設定します.
-// startCall 処理開始時に呼び出すcallを指定します.
-// finalCall 処理終了時に呼び出すcallを設定します.
+// startCall ajax処理開始時に呼び出すcallを指定します.
+// finalCall ajax処理終了時に呼び出すcallを設定します.
 //           function(value, error);
 //             value: then(value)が設定されます.
 //             error: catch(e)が設定されます.
@@ -604,7 +604,7 @@ const clearErrorMessage = function() {
 //          header: HTTPレスポンスヘッダが返却されます.
 //          body: HTTPレスポンスBodyが返却されます.
 //       catch(e): e: エラー内容が返却されます.
-const httpAsync = async function(
+const ajaxAsync = async function(
    url, options, startCall, finalCall) {
    if(typeof(startCall) != "function") {
       // デフォルトの開始処理をセット.
@@ -625,6 +625,8 @@ const httpAsync = async function(
                dialog.clearNowLoading();
             } catch(e) {}
          }
+         // 正常処理の場合 nowLoadingを解除しない.
+         // 理由は二重押し等を防ぐため.
       }
    }
    return new Promise(function(resolve, reject) {
@@ -633,7 +635,7 @@ const httpAsync = async function(
          try {
             startCall();
          } catch(e) {}
-         httpClient(url, options)
+         ajax(url, options)
          .then(function(value) {
             v = value;
             resolve(value);
@@ -657,7 +659,7 @@ const httpAsync = async function(
 const o = {};
 _g.request = o;
 o.loadDelay = loadDelay;
-o.httpClient = httpClient;
+o.ajax = ajax;
 o.nextPage = nextPage;
 o.httpGetParams = httpGetParams;
 o.cancelEvent = cancelEvent;
@@ -673,6 +675,6 @@ o.errorMessage = errorMessage;
 o.clearErrorMessage = clearErrorMessage;
 
 // async用.
-o.httpAsync = httpAsync;
+o.ajaxAsync = ajaxAsync;
 
 })(this);

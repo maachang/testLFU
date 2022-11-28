@@ -114,7 +114,7 @@
 
             // ログイン処理.
             try {
-                const result = await request.httpAsync("/login", {
+                const result = await request.ajaxAsync("/login", {
                     // json.
                     method: "JSON",
                     // 時限的トークンの生成.
@@ -134,13 +134,12 @@
                     return;
                 } else if(result.status >= 400) {
                     // ログイン処理に失敗(status>=400).
-                    if(result.status == 401) {
+                    if(result.status == 403) {
                         // 時限的セッションタイムアウト(401).
                         request.clearInputArray("user", "password");
-                        dialog.alertWindow(
-                            "一定期間が過ぎました。再度ログインを行ってください.", function() {
-                                request.nextPage("/login.jhtml");
-                            });
+                        await dialog.alertAsync(
+                            "一定期間が過ぎました。再度ログインを行ってください");
+                        request.nextPage("/login.jhtml");
                         return;
                     }
                     request.errorMessage("ログイン処理に失敗しました");

@@ -1,3 +1,8 @@
+<%# ログイン用マネージャーライブラリ読み込み. %>
+<%
+    const loginMan = frequire("./lib/auth/manager.js");
+%>
+
 <!DOCTYPE HTML SYSTEM "about:legacy-compat">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
 <head>
@@ -22,6 +27,10 @@
 <script src="./js/dialog.js"></script>
 <script src="./js/request.js"></script>
 
+<%# ログイン中のユーザー情報. %>
+<%
+    const LOGIN_INFO = await loginMan.getLoginInfo($request);
+%>
 
 </head>
 <body>
@@ -33,7 +42,7 @@
     <!-- 表示タイトル -->
     <div class="base_top_item">
         <p class="base_top_description">
-            メニュー画面.
+            メニュー画面(<%= LOGIN_INFO.user %>).
         </p>
     </div>
 
@@ -95,7 +104,7 @@
             if(yes) {
                 try {
                     // ログアウト処理.
-                    const result = await request.httpAsync("/logout");
+                    const result = await request.ajaxAsync("/logout");
                     if(result.status >= 500) {
                         // ログアウト処理で例外(status>=500)発生.
                         request.errorMessage("ログアウト処理でエラーが発生しました");
