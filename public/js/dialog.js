@@ -184,10 +184,10 @@ const alertWindow = function(message, call) {
     if(isNull(em)) {
         return;
     }
-    nowLoading();
     em.innerHTML = createStartAlertHtml(message + MESSAGE_FOODER) + createEndAlertHtml();
     // click callback.
     timeLagCall(function() {
+        nowLoading();
         const em = document.getElementById("alertWindowId");
         if(!isNull(em)) {
             // call指定されている場合.
@@ -232,7 +232,6 @@ const confirmWindow = function(message, call) {
     if(isNull(em)) {
         return;
     }
-    nowLoading();
     const p = dialogPositionCalcSize();
     em.innerHTML = createStartAlertHtml(message) +
         "<br><br>" +
@@ -242,6 +241,7 @@ const confirmWindow = function(message, call) {
         createEndAlertHtml();
     // yes no button click callback.
     timeLagCall(function() {
+        nowLoading();
         // yesButton.
         const yesCall = function() {
             if(!call(true)) {

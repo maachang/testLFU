@@ -134,7 +134,7 @@
                     return;
                 } else if(result.status >= 400) {
                     // ログイン処理に失敗(status>=400).
-                    if(result.status == 403) {
+                    if(result.status == 401) {
                         // 時限的セッションタイムアウト(401).
                         request.clearInputArray("user", "password");
                         await dialog.alertAsync(
