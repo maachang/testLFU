@@ -1,3 +1,18 @@
+<%
+///////////////////////////////////////
+// admin権限が無いと見れないようにする.
+// (admin権限が無い場合はここで排除する.)
+///////////////////////////////////////
+
+// ログイン用マネージャーライブラリ読み込み. %>
+const loginMan = frequire("./lib/auth/manager.js");
+
+// ログイン注意のユーザー情報を取得.
+if(!await loginMan.isLoginOption($request,{admin: true})) {
+    // 存在しない場合はエラー返却.
+    $status.throwError(401);
+}
+%>
 <!DOCTYPE HTML SYSTEM "about:legacy-compat">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
 <head>

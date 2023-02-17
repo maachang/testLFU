@@ -1,4 +1,4 @@
-// ログイン用フィルター.
+// ログイン済み確認用フィルター.
 //
 (function() {
 
@@ -24,7 +24,7 @@ const REDIRECT_URL = "/index.html";
 
 // ログアウト済みメッセージ.
 const LOGOUT_MESSAGE =
-    "ログインしていないか、ログインタイムアウトしています\n.ログイン画面に遷移します.";
+    "未ログインまたはログインタイムアウトしています.\nログイン画面に遷移します.";
 
 // リダイレクト先に対するUrlメッセージを送信.
 // アラートで表示されます.
@@ -43,6 +43,7 @@ const sendUrlMessage = function(url, message) {
 //        trueの場合filter処理で処理終了となります.
 exports.filter = async function(
     outBody, resState, resHeader, request) {
+    const tm = Date.now()
     
     // ログインパス以外の場合は、ログイントークンチェック.
     if(await loginMan.filter(

@@ -48,6 +48,7 @@ exports.handler = async function(
             resState.setStatus(403);
             return;
         }
+        return ret;
     } catch(e) {
         console.error("error login", e);
         // status403.
