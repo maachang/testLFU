@@ -1,6 +1,7 @@
 <%# ログイン用マネージャーライブラリ読み込み. %>
 <%
     const loginMan = frequire("./lib/auth/manager.js");
+    const test2 = await exrequire("lib/test1.js");
 %>
 
 <!DOCTYPE HTML SYSTEM "about:legacy-compat">
@@ -53,7 +54,7 @@
         <!-- ユーザー名 -->
         <div class="base_item">
             <label class="base_label">
-                ■ ユーザー名
+                ■ ユーザー名:${await test2.value()}
                 <span class="base_input_required">必須</span>
             </label>
             <input name="user"
