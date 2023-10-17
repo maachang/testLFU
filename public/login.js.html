@@ -184,6 +184,7 @@
 
         // oAuthログイン.
         const oAuthLogin = function() {
+            dialog.nowLoading();
             // リダイレクトする.
             location.href = "/requestOAuth";
         }
