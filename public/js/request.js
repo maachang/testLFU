@@ -670,6 +670,21 @@ const ajaxAsync = async function(
    });
 }
 
+// ランダムIDを取得.
+// 元はcrypto.randomUUID でuuidのハイフンを削除した内容.
+const randomID = function() {
+   const id = crypto.randomUUID();
+   const len = id.length;
+   let c, ret = "";
+   for(let i = 0; i < len; i ++) {
+      if((c = id.charAt(i)) == "-") {
+         continue;
+      }
+      ret += c;
+   }
+   return ret;
+}
+
 // jsonp呼び出し.
 // url jsonp先のURLを設定します.
 //     このURL先のresponseヘッダはcontent-type=application/json である必要があります.
@@ -687,8 +702,7 @@ const jsonp = function(url, callback, callbackParamsName) {
    // ランダムなjsonpコールバックメソッド名を生成.
    const callbackName =
       "_$_$_$jsonp_$" +
-      Date.now().toString(16) +
-      "_$" + crypto.randomUUID();
+      Date.now().toString(16) + randomID();
    // jsonp条件をセット.
    const e = document.createElement("script");
 
