@@ -40,6 +40,11 @@
                 encodeURIComponent("oauthに失敗しました.");
         }
 
+        // loginページに戻る.
+        const moveLogin = function() {
+            location.href = "/login.jhtml";
+        }
+
         // アクセスデータの利用許可用のリンクを作成.
         const allowAccessData = function(params) {
             // 5秒後に表示させる.
@@ -49,7 +54,10 @@
                         "oAuthが正しく動作しない場合は、以下のリンクでアクセスデータの利用許可を行ってください。<br>" +
                         "<a href='" +
                         decodeURIComponent(params.allowAd) +
-                        "' target='_blank'>アクセスデータの利用許可</a>";
+                        "' target='_blank'>アクセスデータの利用許可</a><br>" +
+                        "<br>利用許可を行った後に" +
+                        "<button onclick='javascript:moveLogin();'>戻る</button>" +
+                        "を押下してください。";
             }, 5000);
         }
 
