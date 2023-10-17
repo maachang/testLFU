@@ -9,6 +9,8 @@ const loginMan = frequire("./lib/auth/manager.js");
 
 // フィルタ対象外パス.
 const NO_FILTER_PATH = {
+    // root表示.
+    "/": true,
     // ログインリダイレクト画面.
     "/index.html": true,
     // ログイン入力画面.
