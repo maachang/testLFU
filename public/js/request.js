@@ -704,14 +704,14 @@ const jsonp = function(url, callback, callbackParamsName) {
       "_$_$_$jsonp_$" +
       Date.now().toString(16) + randomID();
    // jsonp条件をセット.
-   const e = document.createElement("script");
+   const em = document.createElement("script");
 
    // コールバック先に対して生成したランダムなjsonpコールバックメソッド名を設定.
    // この時の定義名は `jsonpCall` なので、利用先ではこの名前を設定する..
    url += (url.indexOf("?") != -1 ? "&" : "?") +
       callbackParamsName + "=" +  callbackName;
-   e.src = url;
-   var head = document.getElementsByTagName("head");
+   em.src = url;
+   const head = document.getElementsByTagName("head");
 
    // グローバルにコールバックメソッドを定義.
    _g[callbackName] = function(json) {
@@ -722,12 +722,12 @@ const jsonp = function(url, callback, callbackParamsName) {
          // 削除処理.
          try {
             _g[callbackName] = undefined;
-            head[0].removeChild(e)
+            head[0].removeChild(em)
          } catch(ee) {}
       }
    };
    // 発火処理.
-   head[0].appendChild(e);
+   head[0].appendChild(em);
 }
 
 /////////////////////////////////////////////////////
