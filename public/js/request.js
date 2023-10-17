@@ -189,7 +189,19 @@ const nextPage = function(url, params) {
 // HttpGetパラメータを取得.
 // 戻り値: Getパラメータが返却されます.
 const httpGetParams = function() {
-   return new URL(location.href).searchParams;
+   let kv;
+   // getParameterのパース処理.
+   const list = new URL(location.href)
+      .searchParams.toString().split("&");
+   const len = list.length;
+   const ret = {};
+   // key=valueの条件をパースする.
+   for(let i = 0; i < len; i ++) {
+      kv = list[i].split("=");
+      ret[decodeURIComponent(kv[0])] = kv[1];
+   }
+   // valueは`decodeURIComponent`されていないので、別途対応が必要.
+   return ret;
 }
 
 // 対象オブジェクトがDomオブジェクトかチェック.
@@ -653,6 +665,21 @@ const ajaxAsync = async function(
    });
 }
 
+// jsonp.
+// この処理の呼び出し以前に`callbackName`の実装を行う必要があります.
+const jsonp = function(url, callback) {
+   const callbackName = "_$_$_jsonp_" + Date.now();
+   _g[callbackName] = callback;
+   const e = document.createElement("script");
+   document.body
+   url += url.indexOf("?") != -1 ?
+      "&jsonpCall=" +  callbackName :
+      "?jsonpCall=" +  callbackName;
+   e.src = url;
+   var head = document.getElementsByTagName("head");
+   head[0].appendChild(e);
+}
+
 /////////////////////////////////////////////////////
 // 外部定義.
 /////////////////////////////////////////////////////
@@ -660,6 +687,7 @@ const o = {};
 _g.request = o;
 o.loadDelay = loadDelay;
 o.ajax = ajax;
+o.jsonp = jsonp;
 o.nextPage = nextPage;
 o.httpGetParams = httpGetParams;
 o.cancelEvent = cancelEvent;

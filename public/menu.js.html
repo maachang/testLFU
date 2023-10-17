@@ -25,7 +25,7 @@
 <%# ログイン中のユーザー情報. %>
 <%
     const loginMan = frequire("./lib/auth/manager.js");
-    const LOGIN_INFO = await loginMan.getLoginInfo($request);
+    const userName = await loginMan.getLoginUserName($request);
 %>
 
 </head>
@@ -38,7 +38,7 @@
     <!-- 表示タイトル -->
     <div class="base_top_item">
         <p class="base_top_description">
-            メニュー画面(<%= LOGIN_INFO.user %>).
+            メニュー画面(<%= userName %>).
         </p>
     </div>
 

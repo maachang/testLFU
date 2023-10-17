@@ -82,8 +82,12 @@
         <!-- 確定ボタン. -->
         <div class="base_submit">
             <button
-                onclick="javascript:loginAction();">
-                ログイン
+                onclick="javascript:passwordLogin();">
+                &nbsp;&nbsp;&nbsp;&nbsp;ログイン&nbsp;&nbsp;&nbsp;&nbsp;
+            </button>
+            <button
+                onclick="javascript:oAuthLogin();">
+                oAuthログイン
             </button>
         </div>
     </div>
@@ -97,8 +101,22 @@
     <!-- ログイン処理. -->
     <script>
 
-        // login処理.
-        const loginAction = async function() {
+        // srcURLを取得.
+        const srcURL = function() {
+            const url = document.referrer;
+            const p = url.indexOf("?srcURL=");
+            if(p == -1) {
+                return undefined;
+            }
+            const pp = url.indexOf("&", p);
+            if(pp == -1) {
+                return decodeURIComponent(url.substring(p + 8));
+            }
+            return decodeURIComponent(url.substring(p + 8, pp));
+        }
+
+        // passwordLogin処理.
+        const passwordLogin = async function() {
             // エラーメッセージクリア.
             request.clearErrorMessage();
 
@@ -111,6 +129,13 @@
             // ログインパラメータを取得.
             const params = request.getInputArray(
                 "user", "password");
+
+            // アクセス元のURLを取得.
+            const url = srcURL();
+            if(url != undefined) {
+                // 存在する場合はsrcURLとして設定.
+                params["srcURL"] = url;
+            }
 
             // ログイン処理.
             try {
@@ -155,6 +180,12 @@
                 // ログイン処理で例外発生.
                 request.errorMessage("ログイン処理に失敗しました");
             }
+        }
+
+        // oAuthログイン.
+        const oAuthLogin = function() {
+            // リダイレクトする.
+            location.href = "/requestOAuth";
         }
 
     </script>

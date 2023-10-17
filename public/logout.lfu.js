@@ -1,6 +1,6 @@
 // ログアウト処理.
 //
-(function(_g) {
+(function() {
 'use strict'
 
 // ログインマネージャ.

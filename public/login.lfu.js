@@ -4,7 +4,7 @@
 'use strict'
 
 // ログインマネージャ.
-const loginMan = frequire("./lib/auth/manager.js");
+const passwordAuth = frequire("./lib/auth/passwordAuth.js");
 
 // ログイン処理.
 // resState レスポンスステータスを設定します.
@@ -31,7 +31,7 @@ exports.handler = async function(
             return;
         }
         // 時限的セッション内容が一致しない場合.
-        if(!loginMan.isTimedSession(request, timedSessions)) {
+        if(!passwordAuth.manager.isTimedSession(request, timedSessions)) {
             // 時限的セッションタイムアウト.
             // status401.
             resState.setStatus(401);
@@ -40,7 +40,7 @@ exports.handler = async function(
         // パラメータを取得.
         const params = request.params;
         // ログイン問い合わせ.
-        const ret = await loginMan.login(
+        const ret = await passwordAuth.login(
             resHeader, request, params.user, params.password);
         // ログイン失敗の場合.
         if(!ret) {
