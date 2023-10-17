@@ -1,4 +1,6 @@
-// request処理.
+/**
+ * request.js
+ */
 (function(_g) {
 "use strict";
 
@@ -111,6 +113,9 @@ const ajax = function(url, options) {
          // async.
          let x = new XMLHttpRequest();
          x.open(_ajax_method(method), url, true);
+         // cookieを利用可能にする.
+         x.withCredentials = true;
+         // ajax実行.
          x.onreadystatechange = function() {
             if(x.readyState == 4) {
                try {
@@ -665,18 +670,49 @@ const ajaxAsync = async function(
    });
 }
 
-// jsonp.
-// この処理の呼び出し以前に`callbackName`の実装を行う必要があります.
-const jsonp = function(url, callback) {
-   const callbackName = "_$_$_jsonp_" + Date.now();
-   _g[callbackName] = callback;
+// jsonp呼び出し.
+// url jsonp先のURLを設定します.
+//     このURL先のresponseヘッダはcontent-type=application/json である必要があります.
+// callback jsonpの実行結果を格納する function(json) を設定します.
+// callbackParamsName jsonp先に渡すコールバック対象の変数名を設定します.
+//     未設定の場合 `jsonpCall` が設定されます.
+const jsonp = function(url, callback, callbackParamsName) {
+   // コールバック先に渡すコールバック引数が設定されていない場合.
+   if(callbackParamsName == undefined ||
+      callbackParamsName == null ||
+      callbackParamsName == "") {
+      // デフォルト名をセット.
+      callbackParamsName = "jsonpCall";
+   }
+   // ランダムなjsonpコールバックメソッド名を生成.
+   const callbackName =
+      "_$_$_$jsonp_$" +
+      Date.now().toString(16) +
+      "_$" + crypto.randomUUID();
+   // jsonp条件をセット.
    const e = document.createElement("script");
-   document.body
-   url += url.indexOf("?") != -1 ?
-      "&jsonpCall=" +  callbackName :
-      "?jsonpCall=" +  callbackName;
+
+   // コールバック先に対して生成したランダムなjsonpコールバックメソッド名を設定.
+   // この時の定義名は `jsonpCall` なので、利用先ではこの名前を設定する..
+   url += (url.indexOf("?") != -1 ? "&" : "?") +
+      callbackParamsName + "=" +  callbackName;
    e.src = url;
    var head = document.getElementsByTagName("head");
+
+   // グローバルにコールバックメソッドを定義.
+   _g[callbackName] = function(json) {
+      try {
+         // コールバック実行.
+         callback(json);
+      } finally {
+         // 削除処理.
+         try {
+            _g[callbackName] = undefined;
+            head[0].removeChild(e)
+         } catch(ee) {}
+      }
+   };
+   // 発火処理.
    head[0].appendChild(e);
 }
 
