@@ -45,20 +45,23 @@
             location.href = "/login.jhtml";
         }
 
-        // アクセスデータの利用許可用のリンクを作成.
-        const allowAccessData = function(params) {
-            // 5秒後に表示させる.
-            setTimeout(function() {
-                const em = document.getElementById("allowAd");
-                    em.innerHTML = 
-                        "oAuthが正しく動作しない場合は、以下のリンクでアクセスデータの利用許可を行ってください。<br>" +
-                        "<a href='" +
-                        decodeURIComponent(params.allowAd) +
-                        "' target='_blank'>アクセスデータの利用許可</a><br>" +
-                        "<br>利用許可を行った後に" +
-                        "<button onclick='javascript:moveLogin();'>戻る</button>" +
-                        "を押下してください。";
-            }, 5000);
+        // 表示内容を更新.
+        const updateView = function(value) {
+            const em = document.getElementById("allowAd");
+            em.innerHTML = value;
+        }
+
+        // アクセスデータの利用許可用内容を表示.
+        const viewAllowAccessData = function(params) {
+            updateView(
+                "利用許可設定が必要です。以下のリンクでアクセスデータの利用許可を行ってください。<br>" +
+                "<a href='" +
+                decodeURIComponent(params.allowAd) +
+                "' target='_blank'>アクセスデータの利用許可</a><br>" +
+                "<br>利用許可を行った後に" +
+                "<button onclick='javascript:moveLogin();'>戻る</button>" +
+                "を押下してログイン画面に遷移してください。"
+            );
         }
 
         // oauthLogin処理.
@@ -66,6 +69,7 @@
             try {
                 const params = request.httpGetParams();
                 request.jsonp(decodeURIComponent(params.oauthUrl), function(value) {
+                    // コールバック結果.
                     try {
                         // statusが200以外.
                         if(value.status != 200) {
@@ -79,13 +83,21 @@
                                 "&redirectToken=" + encodeURIComponent(value["redirectToken"]) +
                                 "&type=" + encodeURIComponent(value["type"]) +
                                 "&tokenKey=" + encodeURIComponent(value["tokenKey"]) +
-                                "&srcURL=" + encodeURIComponent(value["srcURL"])
+                                "&srcURL=" + encodeURIComponent(value["srcURL"]);
                         }
                     } catch(e) {
                         // ログイン処理で例外発生.
                         console.error("[error]oauthログイン処理でエラーが発生しました", e);
                         errorOAuth();
                     }
+                }, function() {
+                    // ロード成功.
+                    // successと表示.
+                    updateView("success");
+                }, function() {
+                    // ロード失敗.
+                    // アクセスデータの利用許可用内容を表示.
+                    viewAllowAccessData(request.httpGetParams());
                 });
             } catch(e) {
                 // ログイン処理で例外発生.
@@ -95,14 +107,7 @@
         }
 
         // 初期処理.
-        const init = function() {
-            const params = request.httpGetParams();
-            allowAccessData(params);
-            oauthLogin(params);
-        }
-
-        // 初期処理.
-        init();
+        oauthLogin(request.httpGetParams());
 
     </script>
 </body>

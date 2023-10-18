@@ -689,9 +689,11 @@ const randomID = function() {
 // url jsonp先のURLを設定します.
 //     このURL先のresponseヘッダはcontent-type=application/json である必要があります.
 // callback jsonpの実行結果を格納する function(json) を設定します.
+// successCall ロードがsuccessの場合に呼び出されます.
+// errorCall ロードがerrorの場合に呼び出されます.
 // callbackParamsName jsonp先に渡すコールバック対象の変数名を設定します.
 //     未設定の場合 `jsonpCall` が設定されます.
-const jsonp = function(url, callback, callbackParamsName) {
+const jsonp = function(url, callback, successCall, errorCall, callbackParamsName) {
    // コールバック先に渡すコールバック引数が設定されていない場合.
    if(callbackParamsName == undefined ||
       callbackParamsName == null ||
@@ -726,6 +728,20 @@ const jsonp = function(url, callback, callbackParamsName) {
          } catch(ee) {}
       }
    };
+
+   // ロード完了イベント.
+   if(typeof(successCall) == "function") {
+      em.addEventListener("load", function(event) {
+         successCall();
+      },false);
+   }
+   // ロードエラーイベント.
+   if(typeof(errorCall) == "function") {
+      em.addEventListener("error", function(event) {
+         errorCall();
+      },false);
+   }
+
    // 発火処理.
    head[0].appendChild(em);
 }
