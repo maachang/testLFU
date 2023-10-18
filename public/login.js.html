@@ -56,7 +56,7 @@
                 ■ ユーザー名:
                 <span class="base_input_required">必須</span>
             </label>
-            <input name="user"
+            <input name="userName"
                 type="email" class="base_input_text" autocomplete="new-password" spellcheck="false"
                 autofocus="autofocus"
                 required="required"
@@ -121,14 +121,14 @@
             request.clearErrorMessage();
 
             // ログインパラメータvalidate.
-            if(request.isValidateInputArray("user", "password")) {
+            if(request.isValidateInputArray("userName", "password")) {
                 // 入力内容が不整合.
                 return false;
             }
 
             // ログインパラメータを取得.
             const params = request.getInputArray(
-                "user", "password");
+                "userName", "password");
 
             // アクセス元のURLを取得.
             const url = srcURL();
@@ -162,7 +162,7 @@
                     // ログイン処理に失敗(status>=400).
                     if(result.status == 401) {
                         // 時限的セッションタイムアウト(401).
-                        request.clearInputArray("user", "password");
+                        request.clearInputArray("userName", "password");
                         await dialog.alertAsync(
                             "一定期間が過ぎました。再度ログインを行ってください");
                         request.nextPage("/login.jhtml");
@@ -170,7 +170,7 @@
                     }
                     request.errorMessage("ログイン処理に失敗しました");
                     // user入力画面にフォーカスをセット.
-                    request.focusElement("user");
+                    request.focusElement("userName");
                     return;
                 }
                 // 正常結果を返却.
