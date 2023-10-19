@@ -90,6 +90,11 @@
 
     <!-- メニュー処理. -->
     <script>
+        // ログアウトエラー.
+        const logoutError = function() {
+            // ログアウト処理で例外(status>=500)発生.
+            request.errorMessage("ログアウト処理でエラーが発生しました");
+        }
         // logout処理.
         const logoutAction = async function() {
             // エラーメッセージクリア.
@@ -102,20 +107,19 @@
                     // ログアウト処理.
                     const result = await request.ajaxAsync("/logout");
                     if(result.status >= 500) {
-                        // ログアウト処理で例外(status>=500)発生.
-                        request.errorMessage("ログアウト処理でエラーが発生しました");
-                        return;
+                        // ログイン処理で例外発生(500系).
+                        logoutError();
                     } else if(result.status >= 400) {
-                        // ログアウト処理に失敗(status>=400).
-                        request.errorMessage("ログアウト処理に失敗しました");
-                        return;
+                        // ログイン処理で例外発生(400系).
+                        logoutError();
+                    } else {
+                        // 正常結果を返却.
+                        request.nextPage("/index.html");
                     }
-                    // 正常結果を返却.
-                    request.nextPage("/index.html");
                 } catch(e) {
                     console.error("[error] ログアウト処理でエラーが発生しました", e);
                     // ログイン処理で例外発生.
-                    request.errorMessage("ログアウト処理でエラーが発生しました");
+                    logoutError();
                 }
             }
         }

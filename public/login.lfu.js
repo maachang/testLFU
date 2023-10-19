@@ -41,7 +41,7 @@ exports.handler = async function(
         const params = request.params;
         // ログイン問い合わせ.
         const ret = await passwordAuth.login(
-            resHeader, request, params.user, params.password);
+            resHeader, request, params.userName, params.password);
         // ログイン失敗の場合.
         if(!ret) {
             // status403.
