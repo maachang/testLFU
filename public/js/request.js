@@ -700,7 +700,7 @@ const longDelayCall = function(call) {
       try {
          call();
       } catch(e) {}
-   }, 1500);
+   }, 5000);
 }
 
 // 超長い遅延実行.
@@ -709,7 +709,7 @@ const longLongDelayCall = function(call) {
       try {
          call();
       } catch(e) {}
-   }, 15000);
+   }, 30000);
 }
 
 
@@ -743,7 +743,7 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
    em.src = url;
    const head = document.getElementsByTagName("head");
 
-   // グローバルにコールバックメソッドを定義.
+   // グローバルにjsonb処理結果呼び出しのコールバックメソッドを定義.
    _g[callbackName] = function(json) {
       try {
          // コールバック実行.
