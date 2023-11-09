@@ -745,19 +745,16 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
 
    // グローバルにjsonb処理結果呼び出しのコールバックメソッドを定義.
    _g[callbackName] = function(json) {
-      try {
-         // コールバック実行(遅延実行).
-         delayCall(function() {
-            callback(json);
-         });
-      } finally {
-         // ロング遅延実行.
-         longDelayCall(function() {
-            // 後始末.
-            _g[callbackName] = undefined;
-            head[0].removeChild(em)
-         });
-      }
+      // コールバック実行(遅延実行).
+      delayCall(function() {
+         callback(json);
+      });
+      // ロング遅延実行で後始末.
+      longDelayCall(function() {
+         // 後始末.
+         _g[callbackName] = undefined;
+         head[0].removeChild(em)
+      });
    };
 
    // ロード完了イベント.
