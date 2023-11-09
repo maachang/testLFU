@@ -20,20 +20,63 @@ const useString = function(n) {
    return n != "";
 }
 
-// 時間差実行.
+// 時間差を指定して実行.
 // call 実行functionを設定します.
 // time 実行差の時間(ミリ秒)を設定します.
 const loadDelay = function(call, time) {
    // 遅延実行開始時間(ミリ秒)が指定されてない場合.
-   time = time|0;
-   if(time <= 0) {
-      // js読み込み・実行から100ミリ秒後に実行.
-      time = 100;
+   if((time = time|0) <= 0) {
+      // js読み込み・実行から50ミリ秒後に実行.
+      time = 50;
    }
    // 遅延実行.
    setTimeout(function() {
-       call();
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]loadDelay処理(" + time + ")でエラーが発生しました", e);
+      }
    }, time);
+}
+
+// 短めの遅延実行.
+// call 遅延実行する対象のfunctionを設定します.
+const delayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]delayCall処理でエラーが発生しました", e);
+      }
+   }, 50);
+}
+
+// 長い遅延実行.
+// call 遅延実行する対象のfunctionを設定します.
+const longDelayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]longDelayCall処理でエラーが発生しました", e);
+      }
+   }, 5000);
+}
+
+// 超長い遅延実行.
+// call 遅延実行する対象のfunctionを設定します.
+const longLongDelayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]longLongDelayCall処理でエラーが発生しました", e);
+      }
+   }, 30000);
 }
 
 // 対象イベントのキャンセル.
@@ -603,45 +646,6 @@ const clearErrorMessage = function() {
    return errorMessage("");
 }
 
-// 遅延実行.
-// call 遅延実行する対象のfunctionを設定します.
-const delayCall = function(call) {
-   setTimeout(function() {
-      try {
-         call();
-      } catch(e) {
-         console.error(
-            "[error]delayCall処理でエラーが発生しました", e);
-      }
-   }, 50);
-}
-
-// 長い遅延実行.
-// call 遅延実行する対象のfunctionを設定します.
-const longDelayCall = function(call) {
-   setTimeout(function() {
-      try {
-         call();
-      } catch(e) {
-         console.error(
-            "[error]longDelayCall処理でエラーが発生しました", e);
-      }
-   }, 5000);
-}
-
-// 超長い遅延実行.
-// call 遅延実行する対象のfunctionを設定します.
-const longLongDelayCall = function(call) {
-   setTimeout(function() {
-      try {
-         call();
-      } catch(e) {
-         console.error(
-            "[error]longLongDelayCall処理でエラーが発生しました", e);
-      }
-   }, 30000);
-}
-
 // [async]ajax.
 // 基本 `request.ajax` でなくこの処理を呼び出します.
 // url 対象のURLを設定します.
@@ -734,7 +738,8 @@ const randomID = function() {
 // errorCall ロードがerrorの場合に呼び出されます.
 // callbackParamsName jsonp先に渡すコールバック対象の変数名を設定します.
 //     未設定の場合 `jsonpCall` が設定されます.
-const jsonp = function(url, callback, successCall, errorCall, callbackParamsName) {
+const jsonp = function(
+   url, callback, successCall, errorCall, callbackParamsName) {
    // コールバック先に渡すコールバック引数が設定されていない場合.
    if(callbackParamsName == undefined ||
       callbackParamsName == null ||
@@ -799,7 +804,10 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
 const o = {};
 _g.request = o;
 o.loadDelay = loadDelay;
-o.ajax = ajax;
+o.delayCall = delayCall;
+o.longDelayCall = longDelayCall;
+o.longLongDelayCall = longLongDelayCall;
+o.ajaxAsync = ajaxAsync;
 o.jsonp = jsonp;
 o.nextPage = nextPage;
 o.httpGetParams = httpGetParams;
@@ -814,11 +822,5 @@ o.focusElement = focusElement;
 o.autoHeightToTextArea = autoHeightToTextArea;
 o.errorMessage = errorMessage;
 o.clearErrorMessage = clearErrorMessage;
-o.delayCall = delayCall;
-o.longDelayCall = longDelayCall;
-o.longLongDelayCall = longLongDelayCall;
-
-// async用.
-o.ajaxAsync = ajaxAsync;
 
 })(this);
