@@ -746,8 +746,10 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
    // グローバルにjsonb処理結果呼び出しのコールバックメソッドを定義.
    _g[callbackName] = function(json) {
       try {
-         // コールバック実行.
-         callback(json);
+         // コールバック実行(遅延実行).
+         delayCall(function() {
+            callback(json);
+         });
       } finally {
          // ロング遅延実行.
          longDelayCall(function() {
