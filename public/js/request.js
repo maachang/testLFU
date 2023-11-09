@@ -603,6 +603,45 @@ const clearErrorMessage = function() {
    return errorMessage("");
 }
 
+// 遅延実行.
+// call 遅延実行する対象のfunctionを設定します.
+const delayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]delayCall処理でエラーが発生しました", e);
+      }
+   }, 50);
+}
+
+// 長い遅延実行.
+// call 遅延実行する対象のfunctionを設定します.
+const longDelayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]longDelayCall処理でエラーが発生しました", e);
+      }
+   }, 5000);
+}
+
+// 超長い遅延実行.
+// call 遅延実行する対象のfunctionを設定します.
+const longLongDelayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {
+         console.error(
+            "[error]longLongDelayCall処理でエラーが発生しました", e);
+      }
+   }, 30000);
+}
+
 // [async]ajax.
 // 基本 `request.ajax` でなくこの処理を呼び出します.
 // url 対象のURLを設定します.
@@ -646,27 +685,38 @@ const ajaxAsync = async function(
          // 理由は二重押し等を防ぐため.
       }
    }
+   // async結果を返却.
    return new Promise(function(resolve, reject) {
-      setTimeout(function() {
+      // 遅延実行.
+      delayCall(function() {
          let v, e;
-         try {
-            startCall();
-         } catch(e) {}
+         if(typeof(startCall) == "function") {
+            try {
+               // ajax開始時に呼び出される.
+               startCall();
+            } catch(e) {}               
+         }
+         // ajax実行.
          ajax(url, options)
          .then(function(value) {
+            // 正常処理.
             v = value;
             resolve(value);
          })
          .catch(function(err) {
+            // 異常処理.
             e = err;
             reject(err);
          })
          .finally(function() {
-            try {
-               finalCall(v, e);
-            } catch(e) {};
+            // finally.
+            if(typeof(finalCall) == "function") {
+               try {
+                  finalCall(v, e);
+               } catch(e) {};
+            }
          });
-      }, 100);
+      });
    });
 }
 
@@ -684,43 +734,6 @@ const randomID = function() {
    }
    return ret;
 }
-
-// 遅延実行.
-const delayCall = function(call) {
-   setTimeout(function() {
-      try {
-         call();
-      } catch(e) {
-         console.error(
-            "[error]delayCall処理でエラーが発生しました", e);
-      }
-   }, 50);
-}
-
-// 長い遅延実行.
-const longDelayCall = function(call) {
-   setTimeout(function() {
-      try {
-         call();
-      } catch(e) {
-         console.error(
-            "[error]longDelayCall処理でエラーが発生しました", e);
-      }
-   }, 5000);
-}
-
-// 超長い遅延実行.
-const longLongDelayCall = function(call) {
-   setTimeout(function() {
-      try {
-         call();
-      } catch(e) {
-         console.error(
-            "[error]longLongDelayCall処理でエラーが発生しました", e);
-      }
-   }, 30000);
-}
-
 
 // jsonp呼び出し.
 // url jsonp先のURLを設定します.
