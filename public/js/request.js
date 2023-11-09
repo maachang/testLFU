@@ -651,16 +651,13 @@ const longLongDelayCall = function(call) {
 //        header 設定したいHTTPリクエストヘッダを設定します.
 // startCall ajax処理開始時に呼び出すcallを指定します.
 // finalCall ajax処理終了時に呼び出すcallを設定します.
-//           function(value, error);
-//             value: then(value)が設定されます.
-//             error: catch(e)が設定されます.
 // 戻り値 promiseオブジェクトが返却されます(async).
 //       then({status: number, header: object, body: string}):
 //          status: HTTPレスポンスステータスが返却されます.
 //          header: HTTPレスポンスヘッダが返却されます.
 //          body: HTTPレスポンスBodyが返却されます.
 //       catch(e): e: エラー内容が返却されます.
-const ajaxAsync = async function(
+const ajaxAsync = function(
    url, options, startCall, finalCall) {
    if(typeof(startCall) != "function") {
       // デフォルトの開始処理をセット.
