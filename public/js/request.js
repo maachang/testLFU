@@ -723,8 +723,11 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
       } finally {
          // 削除処理.
          try {
-            _g[callbackName] = undefined;
-            head[0].removeChild(em)
+            setTimeout(function() {
+               // 後始末.
+               _g[callbackName] = undefined;
+               head[0].removeChild(em)
+            }, 500);
          } catch(ee) {}
       }
    };
@@ -732,13 +735,17 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
    // ロード完了イベント.
    if(typeof(successCall) == "function") {
       em.addEventListener("load", function(event) {
-         successCall();
+         setTimeout(function() {
+            successCall();
+         }, 50);
       },false);
    }
    // ロードエラーイベント.
    if(typeof(errorCall) == "function") {
       em.addEventListener("error", function(event) {
-         errorCall();
+         setTimeout(function() {
+            errorCall();
+         }, 50);
       },false);
    }
 
