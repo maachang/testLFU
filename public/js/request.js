@@ -685,6 +685,16 @@ const randomID = function() {
    return ret;
 }
 
+// 遅延実行.
+const delayCall = function(call) {
+   setTimeout(call, 50);
+}
+
+// 長い遅延実行.
+const longDelayCall = function(call) {
+   setTimeout(call, 1500);
+}
+
 // jsonp呼び出し.
 // url jsonp先のURLを設定します.
 //     このURL先のresponseヘッダはcontent-type=application/json である必要があります.
@@ -723,11 +733,12 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
       } finally {
          // 削除処理.
          try {
-            setTimeout(function() {
+            // ロング遅延実行.
+            longDelayCall(function() {
                // 後始末.
                _g[callbackName] = undefined;
                head[0].removeChild(em)
-            }, 500);
+            });
          } catch(ee) {}
       }
    };
@@ -735,17 +746,19 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
    // ロード完了イベント.
    if(typeof(successCall) == "function") {
       em.addEventListener("load", function(event) {
-         setTimeout(function() {
+         // 遅延実行.
+         delayCall(function() {
             successCall();
-         }, 50);
+         });
       },false);
    }
    // ロードエラーイベント.
    if(typeof(errorCall) == "function") {
       em.addEventListener("error", function(event) {
-         setTimeout(function() {
+         // 遅延実行.
+         delayCall(function() {
             errorCall();
-         }, 50);
+         });
       },false);
    }
 
@@ -774,6 +787,8 @@ o.focusElement = focusElement;
 o.autoHeightToTextArea = autoHeightToTextArea;
 o.errorMessage = errorMessage;
 o.clearErrorMessage = clearErrorMessage;
+o.delayCall = delayCall;
+o.longDelayCall = longDelayCall;
 
 // async用.
 o.ajaxAsync = ajaxAsync;

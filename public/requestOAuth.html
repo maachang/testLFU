@@ -47,25 +47,21 @@
 
         // 表示内容を更新.
         const updateView = function(value) {
-            setTimeout(function() {
-                const em = document.getElementById("allowAd");
-                em.innerHTML = value;
-            }, 50);
+            const em = document.getElementById("allowAd");
+            em.innerHTML = value;
         }
 
         // アクセスデータの利用許可用内容を表示.
         const viewAllowAccessData = function(params) {
-            setTimeout(function() {
-                updateView(
-                    "利用許可設定が必要です。以下のリンクでアクセスデータの利用許可を行ってください。<br>" +
-                    "<a href='" +
-                    decodeURIComponent(params.allowAd) +
-                    "' target='_blank'>アクセスデータの利用許可</a><br>" +
-                    "<br>利用許可を行った後に" +
-                    "<button onclick='javascript:moveLogin();'>戻る</button>" +
-                    "を押下してログイン画面に遷移してください。"
-                );
-            }, 50);
+            updateView(
+                "利用許可設定が必要です。以下のリンクでアクセスデータの利用許可を行ってください。<br>" +
+                "<a href='" +
+                decodeURIComponent(params.allowAd) +
+                "' target='_blank'>アクセスデータの利用許可</a><br>" +
+                "<br>利用許可を行った後に" +
+                "<button onclick='javascript:moveLogin();'>戻る</button>" +
+                "を押下してログイン画面に遷移してください。"
+            );
         }
 
         // oauthLogin処理.
@@ -81,7 +77,7 @@
                             errorOAuth();
                         // statusが200.
                         } else {
-                            // 正常取得の場合.
+                            // 正常取得の場合はリダイレクト.
                             location.href = "/resultOAuth" +
                                 "?mail=" + encodeURIComponent(value["mail"]) +
                                 "&redirectToken=" + encodeURIComponent(value["redirectToken"]) +
