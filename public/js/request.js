@@ -687,35 +687,29 @@ const ajaxAsync = async function(
    }
    // async結果を返却.
    return new Promise(function(resolve, reject) {
-      // 遅延実行.
-      delayCall(function() {
-         let v, e;
-         if(typeof(startCall) == "function") {
+      if(typeof(startCall) == "function") {
+         try {
+            // ajax開始時に呼び出される.
+            startCall();
+         } catch(e) {}               
+      }
+      // ajax実行.
+      ajax(url, options)
+      .then(function(value) {
+         // 正常処理.
+         resolve(value);
+      })
+      .catch(function(err) {
+         // 異常処理.
+         reject(err);
+      })
+      .finally(function() {
+         // finally.
+         if(typeof(finalCall) == "function") {
             try {
-               // ajax開始時に呼び出される.
-               startCall();
-            } catch(e) {}               
+               finalCall();
+            } catch(e) {};
          }
-         // ajax実行.
-         ajax(url, options)
-         .then(function(value) {
-            // 正常処理.
-            v = value;
-            resolve(value);
-         })
-         .catch(function(err) {
-            // 異常処理.
-            e = err;
-            reject(err);
-         })
-         .finally(function() {
-            // finally.
-            if(typeof(finalCall) == "function") {
-               try {
-                  finalCall(v, e);
-               } catch(e) {};
-            }
-         });
       });
    });
 }
