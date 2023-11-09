@@ -690,7 +690,10 @@ const delayCall = function(call) {
    setTimeout(function() {
       try {
          call();
-      } catch(e) {}
+      } catch(e) {
+         console.error(
+            "[error]delayCall処理でエラーが発生しました", e);
+      }
    }, 50);
 }
 
@@ -699,7 +702,10 @@ const longDelayCall = function(call) {
    setTimeout(function() {
       try {
          call();
-      } catch(e) {}
+      } catch(e) {
+         console.error(
+            "[error]longDelayCall処理でエラーが発生しました", e);
+      }
    }, 5000);
 }
 
@@ -708,7 +714,10 @@ const longLongDelayCall = function(call) {
    setTimeout(function() {
       try {
          call();
-      } catch(e) {}
+      } catch(e) {
+         console.error(
+            "[error]longLongDelayCall処理でエラーが発生しました", e);
+      }
    }, 30000);
 }
 
@@ -752,7 +761,7 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
       // ロング遅延実行で後始末.
       longDelayCall(function() {
          // 後始末.
-         _g[callbackName] = undefined;
+         delete _g[callbackName];
          head[0].removeChild(em)
       });
    };
