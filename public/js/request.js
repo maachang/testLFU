@@ -687,13 +687,31 @@ const randomID = function() {
 
 // 遅延実行.
 const delayCall = function(call) {
-   setTimeout(call, 50);
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {}
+   }, 50);
 }
 
 // 長い遅延実行.
 const longDelayCall = function(call) {
-   setTimeout(call, 1500);
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {}
+   }, 1500);
 }
+
+// 超長い遅延実行.
+const longLongDelayCall = function(call) {
+   setTimeout(function() {
+      try {
+         call();
+      } catch(e) {}
+   }, 15000);
+}
+
 
 // jsonp呼び出し.
 // url jsonp先のURLを設定します.
@@ -731,15 +749,12 @@ const jsonp = function(url, callback, successCall, errorCall, callbackParamsName
          // コールバック実行.
          callback(json);
       } finally {
-         // 削除処理.
-         try {
-            // ロング遅延実行.
-            longDelayCall(function() {
-               // 後始末.
-               _g[callbackName] = undefined;
-               head[0].removeChild(em)
-            });
-         } catch(ee) {}
+         // ロング遅延実行.
+         longDelayCall(function() {
+            // 後始末.
+            _g[callbackName] = undefined;
+            head[0].removeChild(em)
+         });
       }
    };
 
@@ -789,6 +804,7 @@ o.errorMessage = errorMessage;
 o.clearErrorMessage = clearErrorMessage;
 o.delayCall = delayCall;
 o.longDelayCall = longDelayCall;
+o.longLongDelayCall = longLongDelayCall;
 
 // async用.
 o.ajaxAsync = ajaxAsync;
