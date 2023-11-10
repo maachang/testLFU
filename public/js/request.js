@@ -737,10 +737,12 @@ const randomID = function() {
 // callback jsonpの実行結果を格納する function(json) を設定します.
 // successCall ロードがsuccessの場合に呼び出されます.
 // errorCall ロードがerrorの場合に呼び出されます.
+// errorTimeout ロードエラーの判定用タイムアウト値(ミリ秒)を設定します.
+//              設定しない場合は５秒がセットされます.
 // callbackParamsName jsonp先に渡すコールバック対象の変数名を設定します.
 //     未設定の場合 `jsonpCall` が設定されます.
 const jsonp = function(
-   url, callback, successCall, errorCall, callbackParamsName) {
+   url, callback, successCall, errorCall, errorTimeout, callbackParamsName) {
    // コールバック先に渡すコールバック引数が設定されていない場合.
    if(callbackParamsName == undefined ||
       callbackParamsName == null ||
@@ -761,11 +763,23 @@ const jsonp = function(
       callbackParamsName + "=" +  callbackName;
    em.src = url;
    const head = document.getElementsByTagName("head");
+   let successFlag = false;
 
    // グローバルにjsonb処理結果呼び出しのコールバックメソッドを定義.
    _g[callbackName] = function(json) {
       // コールバック実行(遅延実行).
       delayCall(function() {
+         // 正常実行.
+         successFlag = true;
+         if(typeof(successCall) == "function") {
+            try {
+               successCall();
+            } catch(e) {
+               console.error(
+                  "[error]successCall処理でエラーが発生しました", e);      
+            }
+         }
+         // コールバック実行.
          callback(json);
       });
       // ロング遅延実行で後始末.
@@ -776,22 +790,20 @@ const jsonp = function(
       });
    };
 
-   // ロード完了イベント.
-   if(typeof(successCall) == "function") {
-      em.addEventListener("load", function(event) {
-         // 遅延実行.
-         delayCall(function() {
-            successCall();
-         });
-      },false);
-   }
    // ロードエラーイベント.
    if(typeof(errorCall) == "function") {
-      em.addEventListener("error", function(event) {
-         // 遅延実行.
-         delayCall(function() {
-            errorCall();
-         });
+      em.addEventListener("load", function(event) {
+         errorTimeout = errorTimeout|0;
+         if(errorTimeout <= 0) {
+            errorTimeout = 5000;
+         }
+         // errorTimeout秒後にロードエラーを実行.
+         setTimeout(function() {
+            // ただしsuccessFlagがtrueの場合はエラー処理を行わない.
+            if(!successFlag) {
+               errorCall();
+            }
+         }, errorTimeout);         
       },false);
    }
 
