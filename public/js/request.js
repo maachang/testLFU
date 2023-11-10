@@ -24,8 +24,8 @@ const useString = function(n) {
 // call 実行functionを設定します.
 // time 実行差の時間(ミリ秒)を設定します.
 const loadDelay = function(call, time) {
-   // 遅延実行開始時間(ミリ秒)が指定されてない場合.
-   if((time = time|0) <= 0) {
+   // 遅延実行開始時間(ミリ秒)が指定されてない、既定値未満の場合.
+   if((time = time|0) <= 50) {
       // js読み込み・実行から50ミリ秒後に実行.
       time = 50;
    }
@@ -688,19 +688,20 @@ const ajaxAsync = function(
    }
    // async結果を返却.
    return new Promise(function(resolve, reject) {
-      if(typeof(startCall) == "function") {
-         try {
-            // ajax開始時に呼び出される.
-            startCall();
-         } catch(e) {}               
-      }
+      try {
+         // ajax開始時に呼び出される.
+         startCall();
+      } catch(e) {}
+      let vl, er;
       // ajax実行.
       ajax(url, options)
       .then(function(value) {
+         vl = value;
          // 正常処理.
          resolve(value);
       })
       .catch(function(err) {
+         er = err;
          // 異常処理.
          reject(err);
       })
@@ -708,7 +709,7 @@ const ajaxAsync = function(
          // finally.
          if(typeof(finalCall) == "function") {
             try {
-               finalCall();
+               finalCall(vl, er);
             } catch(e) {};
          }
       });

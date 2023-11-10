@@ -7,8 +7,8 @@
 // ログインマネージャ.
 const loginMan = frequire("./lib/auth/manager.js");
 
-// フィルタ対象外パス.
-const NO_FILTER_PATH = {
+// 未ログインで利用可能なページ.
+const NO_LOGIN_PAGE_FILTER_PATH = {
     // root表示.
     "/": true,
     // ログインリダイレクト画面.
@@ -26,11 +26,11 @@ const NO_FILTER_PATH = {
     "/resultOAuth": true,
 };
 
-// リダイレクト先URL.
-const REDIRECT_URL = "/index.html";
+// ログインされてない場合のリダイレクト先URL.
+const NO_LOGIN_REDIRECT_URL = "/index.html";
 
-// ログアウト済みメッセージ.
-const LOGOUT_MESSAGE =
+// ログインされていない場合のメッセージ.
+const NO_LOGIN_MESSAGE =
     "未ログインまたはログインタイムアウトしています.\nログイン画面に遷移します.";
 
 // リダイレクト先に対するUrlメッセージを送信.
@@ -55,12 +55,13 @@ const sendUrlMessage = function(url, message) {
 //        trueの場合filter処理で処理終了となります.
 exports.filter = async function(
     outBody, resState, resHeader, request) {
-    const tm = Date.now()
     
     // ログインパス以外の場合は、ログイントークンチェック.
     if(await loginMan.filter(
-        outBody, resState, resHeader, request, NO_FILTER_PATH)) {
-        let url = REDIRECT_URL;
+        outBody, resState, resHeader, request,
+        NO_LOGIN_PAGE_FILTER_PATH)) {
+        // ログインされていない場合.
+        let url = NO_LOGIN_REDIRECT_URL;
         // 遷移先のパスを取得.
         const path = request.path;
         // ログイン成功後にreferer先に遷移が必要な場合.
@@ -68,13 +69,15 @@ exports.filter = async function(
             // refererのURLを設定.
             url += "?srcURL=" + encodeURIComponent(path);
         }
-        // ログイン先へリダイレクト.
+        // ログインページへリダイレクト.
         outBody[null];
-        // ログアウト済みのメッセージを送信.
+        // ログインされていない旨のメッセージをセット.
         resState.redirect(
-            sendUrlMessage(url, LOGOUT_MESSAGE));
+            sendUrlMessage(url, NO_LOGIN_MESSAGE));
+        // filter処理で終了する.
         return true;
     }
+    // filterを無視する.
     return false;
 }
 
