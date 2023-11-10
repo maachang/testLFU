@@ -805,6 +805,13 @@ const jsonp = function(
             }
          }, errorTimeout);         
       },false);
+      // firefoxの場合エラーが出た場合、エラーイベントとなるので、
+      // エラーイベントにも追加.
+      em.addEventListener("error", function(event) {
+         delayCall(function() {
+            errorCall();
+         });
+      });
    }
 
    // 発火処理.
