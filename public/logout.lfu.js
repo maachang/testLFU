@@ -3,8 +3,8 @@
 (function() {
 'use strict'
 
-// ログインマネージャ.
-const loginMan = frequire("./lib/auth/manager.js");
+// ログイン認証.
+const authLogin = frequire("./lib/auth/authLogin.js");
 
 // ログアウト処理.
 // resState レスポンスステータスを設定します.
@@ -15,7 +15,7 @@ exports.handler = async function(
     resState, resHeader, request) {
     try {
         // ログアウト処理.
-        await loginMan.logout(resHeader, request);
+        await authLogin.logout(resHeader, request);
     } catch(e) {
         // 例外出力.
         console.error("error logout", e);

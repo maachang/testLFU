@@ -24,8 +24,10 @@
 
 <%# ログイン中のユーザー情報. %>
 <%
-    const loginMan = frequire("./lib/auth/manager.js");
-    const userName = await loginMan.getLoginUserName($request);
+    // ログイン認証.
+    const authLogin = frequire("./lib/auth/authLogin.js");
+    // ログインユーザ名を取得.
+    const userName = await authLogin.getUserName($request);
 %>
 
 </head>

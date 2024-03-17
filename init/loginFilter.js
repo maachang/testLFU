@@ -1,11 +1,10 @@
 // ログイン済み確認用フィルター.
 //
 (function() {
-
 'use strict'
 
-// ログインマネージャ.
-const loginMan = frequire("./lib/auth/manager.js");
+// ログイン認証.
+const authLogin = frequire("./lib/auth/authLogin.js");
 
 // 未ログインで利用可能なページ.
 const NO_LOGIN_PAGE_FILTER_PATH = {
@@ -31,7 +30,7 @@ const NO_LOGIN_REDIRECT_URL = "/index.html";
 
 // ログインされていない場合のメッセージ.
 const NO_LOGIN_MESSAGE =
-    "未ログインまたはログインタイムアウトしています.\nログイン画面に遷移します.";
+    "ログインセッションが切れています.\nログイン画面に遷移します.";
 
 // リダイレクト先に対するUrlメッセージを送信.
 // アラートで表示されます.
@@ -57,7 +56,7 @@ exports.filter = async function(
     outBody, resState, resHeader, request) {
     
     // ログインパス以外の場合は、ログイントークンチェック.
-    if(await loginMan.filter(
+    if(await authLogin.filter(
         outBody, resState, resHeader, request,
         NO_LOGIN_PAGE_FILTER_PATH)) {
         // ログインされていない場合.

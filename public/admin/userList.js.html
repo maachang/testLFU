@@ -1,14 +1,9 @@
 <%
-///////////////////////////////////////
-// admin権限が無いと見れないようにする.
-// (admin権限が無い場合はここで排除する.)
-///////////////////////////////////////
+// ログイン認証.
+const authLogin = frequire("./lib/auth/authLogin.js");
 
-// ログイン用マネージャーライブラリ読み込み. %>
-const loginMan = frequire("./lib/auth/manager.js");
-
-// ログイン注意のユーザー情報を取得.
-if(!await loginMan.isLoginOption($request,{admin: true})) {
+// ログイン中のユーザが管理者権限を有してない場合.
+if(!await authLogin.getUserInfo($request).isAdminPermission()) {
     // 存在しない場合はエラー返却.
     $status.throwError(401);
 }

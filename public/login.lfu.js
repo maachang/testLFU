@@ -20,23 +20,6 @@ exports.handler = async function(
             resState.setStatus(403);
             return;
         }
-        // 時限的セッションをチェック.
-        // これにより、直接アクセス・アカウントでの機械的アクセス解析を防ぐ.
-        const timedSessions = request.header.get(
-            "x-login-timed-session");
-        // 存在しない場合.
-        if(timedSessions == undefined) {
-            // status403.
-            resState.setStatus(403);
-            return;
-        }
-        // 時限的セッション内容が一致しない場合.
-        if(!passwordAuth.manager.isTimedSession(request, timedSessions)) {
-            // 時限的セッションタイムアウト.
-            // status401.
-            resState.setStatus(401);
-            return;
-        }
         // パラメータを取得.
         const params = request.params;
         // ログイン問い合わせ.
